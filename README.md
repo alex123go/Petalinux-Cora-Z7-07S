@@ -1,3 +1,26 @@
+# Reason for this fork
+I encountered some errors while trying to compile petalinux. I will list everything here.
+
+### 1. git clone https instead of ssh
+I had an error while `petalinux-build` was trying to clone some repository from github. You need to run the following command for git to use `https` instead of `ssh` :
+
+    git config --global url.https://github.com/.insteadOf git://github.com/
+  
+> If you want to remove this config, run `git config --global --edit` and edit the file accordingly
+
+### 2. add patch to program PL via /dev/xdevcfg
+Add patch from https://github.com/Digilent/Petalinux-Cora-Z7-07S/issues/2 
+
+### 3. manually downloaded and checkout the uboot-digilent repository
+Looks like there's a problem with yocto and it is unable to checkout the desired checkout. We did it manually and added it to the project.
+```
+git clone https://github.com/Digilent/u-boot-digilent.git
+cd u-boot-digilent
+git checkout 4a3462002712c18b9b2c7f8732967aa66f3adb51
+
+```
+To use this folder, we did `petalinux-config`
+
 # Cora Z7-07S Petalinux BSP Project
 
 ## Built for Petalinux 2017.4
@@ -101,7 +124,7 @@ chown <your_user_name> /opt/pkg/petalinux/
 exit
 ```
 
-Finally, download the petalinux installer from Xilinx and run the following (do not run as root):
+Finally, download the [petalinux installer](https://www.xilinx.com/member/forms/download/xef.html?filename=petalinux-v2017.4-final-installer.run) (`PetaLinux 2017.4 Installer (TAR/GZIP - 7.86 GB)`) from Xilinx and run the following (do not run as root):
 
 ```
 cd ~/Downloads
