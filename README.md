@@ -21,6 +21,47 @@ git checkout 4a3462002712c18b9b2c7f8732967aa66f3adb51
 ```
 To use this folder, we did `petalinux-config`
 
+
+# Make an image of the SD card
+## Easiest solution
+- Use windows and download win32diskimager
+- Make sure to check the box `Read Only Allocated Partitions` if you want the smallest image as possible
+
+## Linux solution
+I don't know if it's the best solution on Linux, but that's how I made it worked.
+
+- Insert the sd card as an external media
+- `lsblk` to find the device name
+- Use `fdisk` to obtain the partitions data :
+  ```
+  # fdisk -l /dev/sdb
+  Disk /dev/sdb: 116.4 GiB, 125014376448 bytes, 244168704 sectors
+  Units = sectors of 1 * 512 = 512 bytes
+  Sector size (logical/physical): 512 bytes / 512 bytes
+  I/O size (minimum/optimal): 512 bytes / 512 bytes
+  Disklabel type : dos
+  Disk identifier: 0x0397735
+
+  Device 		Boot      Start         End     Sectors   Size 	Id  Type
+  /dev/sdb1 	* 	   2048     9181183     2097152     1G	83  Linux
+  /dev/sdb2 		2099200     6293503     4194304     2G	83  Linux
+  ```
+- use `dd` with arguments to image only a allocated partitions of the SD card.
+	- The `bs` argument is equal to the size of the sectors `Units = sectors of 1 * 512 = 512 bytes → `bs=512` \\
+  	- The `count` argument is equal to the last sector + 1. `count=$[6293503+1]`
+  ```
+	# dd if=/dev/sdb of=~/image.img bs=512 count=$[6293503+1] status=progress
+  ```
+- The newly created image should be working.
+
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
+# Original README.d
 # Cora Z7-07S Petalinux BSP Project
 
 ## Built for Petalinux 2017.4
